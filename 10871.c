@@ -1,19 +1,14 @@
 #include <stdio.h>
 int main(){
-    int a, x, j = 0;
-    scanf("%d %d", &a, &x);
-    int array[a];
-    int array1[a];
+    int n, x;
+    scanf("%d %d", &n, &x);
+    int *array = malloc(sizeof(int) * n);
 
-    for(int i = 0; i < a; i++){
-        scanf("%d ", &array[i]);
-        if(x > array[i]){
-                array1[j] = array[i];
-                j++;
-        }
+    for(int i = 0; i < n; i++){
+        scanf("%d", &array[i]); //scanf는 버퍼라는 존재 때문에 공백 안 넣어도 작동함.
+        if(x > array[i]) printf("%d ", array[i]);
     }
-    for(int i = 0; i < j; i++){
-        printf("%d ", array1[i]);
-    }
+
+    free(array);
     return 0;
 }
