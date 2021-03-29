@@ -1,40 +1,104 @@
+#include <assert.h>
+#include <limits.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int main(){
-    //입력받은 학생 수만큼 입력 받은 과목 수의 성적을 받아 반 평균을 구하는 프로그램.
-    int stn, sbn; //student_num(학생 수), subject_num(과목 수)
-    printf("학생 수와 과목 수를 입력하세요: ");
-    scanf("%d %d", &stn, &sbn);
+char* readline();
+char** split_string(char*);
 
-    int **arr = malloc(sizeof(int*) * stn);
-    
-    for(int i = 0; i < stn; i++){
-        arr[i] = (int*)malloc(sizeof(int) * sbn);
-    }
-    
-    for(int i = 0; i < stn; i++){
-        printf("%d번째 학생의 %d가지 점수를 입력하시오.\n", i + 1, sbn);
-        for(int j = 0; j < sbn; j++){
-            scanf("%d", &arr[i][j]);
+// Complete the miniMaxSum function below.
+void miniMaxSum(int arr_count, int* arr) {
+    int temp;
+    for (int i = 0; i < arr_count; i++)    // 요소의 개수만큼 반복
+    {
+        for (int j = 0; j < arr_count - 1; j++)   // 요소의 개수 - 1만큼 반복
+        {
+            if (arr[j] > arr[j + 1])          // 현재 요소의 값과 다음 요소의 값을 비교하여
+            {                                 // 큰 값을
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;            // 다음 요소로 보냄
+            }
         }
     }
+    printf("%d  %d", arr[0]+arr[1]+arr[2]+arr[3], arr[1]+arr[2]+arr[3]+arr[4]);
+}
 
-    float *sum = malloc(sizeof(int) * sbn);
-    memset(sum, 0.0, sizeof(int) * sbn);//동적할당 모두 0으로 초기화
+int main()
+{
+    char** arr_temp = split_string(readline());
+    int* arr = malloc(5 * sizeof(int));
 
-    for(int j = 0; j < sbn; j++){
-        int temp = 0;
-        for(int i = 0; i < stn; i++){
-            temp += arr[i][j];
-        }
-        sum[j] = (float)temp/stn;
+    for (int i = 0; i < 5; i++) {
+        char* arr_item_endptr;
+        char* arr_item_str = *(arr_temp + i);
+        int arr_item = strtol(arr_item_str, &arr_item_endptr, 10);
+
+        if (arr_item_endptr == arr_item_str || *arr_item_endptr != '\0') { exit(EXIT_FAILURE); }
+
+        *(arr + i) = arr_item;
     }
-    printf("각 과목 별 평균은 ");
 
-    for(int i = 0; i < sbn; i++){
-        printf("%f ", sum[i]);
-    }
-    printf("입니다.");
+    int arr_count = 5;
+
+    miniMaxSum(arr_count, arr);
+
     return 0;
+}
+
+char* readline() {
+    size_t alloc_length = 1024;
+    size_t data_length = 0;
+    char* data = malloc(alloc_length);
+
+    while (true) {
+        char* cursor = data + data_length;
+        char* line = fgets(cursor, alloc_length - data_length, stdin);
+
+        if (!line) { break; }
+
+        data_length += strlen(cursor);
+
+        if (data_length < alloc_length - 1 || data[data_length - 1] == '\n') { break; }
+
+        size_t new_length = alloc_length << 1;
+        data = realloc(data, new_length);
+
+        if (!data) { break; }
+
+        alloc_length = new_length;
+    }
+
+    if (data[data_length - 1] == '\n') {
+        data[data_length - 1] = '\0';
+    }
+
+    data = realloc(data, data_length);
+
+    return data;
+}
+
+char** split_string(char* str) {
+    char** splits = NULL;
+    char* token = strtok(str, " ");
+
+    int spaces = 0;
+
+    while (token) {
+        splits = realloc(splits, sizeof(char*) * ++spaces);
+        if (!splits) {
+            return splits;
+        }
+
+        splits[spaces - 1] = token;
+
+        token = strtok(NULL, " ");
+    }
+
+    return splits;
 }

@@ -2,24 +2,21 @@
 file name : 10872.c
 author : ekg1229
 created : 2021/03/22
+modified: 2021/03/28
 */
 
 #include <stdio.h>
 int fact(int x);
 
 int main(){
-    int n, result;
+    int n;
     scanf("%d", &n);
-    result = fact(n);
-    printf("%d", result);
+    printf("%d", fact(n));
     return 0;
 }
 
 int fact(int x){
-    int y = 0;
-    printf("1\n");
-    if(x>0){
-        y += fact(x-1) * x;
-    }
-    return y;
+    if(x==0) return 1;
+    else if(x==1) return 1;
+    else return fact(x-1) * x;
 }
