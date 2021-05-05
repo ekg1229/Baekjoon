@@ -1,104 +1,53 @@
-#include <assert.h>
-#include <limits.h>
-#include <math.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <math.h>
+#define MAX_DEGREE 101 // 다항식의 최대차수 + 1
+typedef struct { 
+	int degree;
+	float coef[MAX_DEGREE];
+} polynomial;
 
-char* readline();
-char** split_string(char*);
+polynomial a = { 5, {10, 0, 0, 0, 6, 3} };
 
-// Complete the miniMaxSum function below.
-void miniMaxSum(int arr_count, int* arr) {
-    int temp;
-    for (int i = 0; i < arr_count; i++)    // 요소의 개수만큼 반복
-    {
-        for (int j = 0; j < arr_count - 1; j++)   // 요소의 개수 - 1만큼 반복
-        {
-            if (arr[j] > arr[j + 1])          // 현재 요소의 값과 다음 요소의 값을 비교하여
-            {                                 // 큰 값을
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;            // 다음 요소로 보냄
-            }
-        }
-    }
-    printf("%d  %d", arr[0]+arr[1]+arr[2]+arr[3], arr[1]+arr[2]+arr[3]+arr[4]);
-}
-
-int main()
+// C = A+B 여기서 A와 B는 다항식이다. 구조체가 반환된다. 
+polynomial poly_add1(polynomial A, polynomial B)
 {
-    char** arr_temp = split_string(readline());
-    int* arr = malloc(5 * sizeof(int));
-
-    for (int i = 0; i < 5; i++) {
-        char* arr_item_endptr;
-        char* arr_item_str = *(arr_temp + i);
-        int arr_item = strtol(arr_item_str, &arr_item_endptr, 10);
-
-        if (arr_item_endptr == arr_item_str || *arr_item_endptr != '\0') { exit(EXIT_FAILURE); }
-
-        *(arr + i) = arr_item;
-    }
-
-    int arr_count = 5;
-
-    miniMaxSum(arr_count, arr);
-
-    return 0;
-}
-
-char* readline() {
-    size_t alloc_length = 1024;
-    size_t data_length = 0;
-    char* data = malloc(alloc_length);
-
-    while (true) {
-        char* cursor = data + data_length;
-        char* line = fgets(cursor, alloc_length - data_length, stdin);
-
-        if (!line) { break; }
-
-        data_length += strlen(cursor);
-
-        if (data_length < alloc_length - 1 || data[data_length - 1] == '\n') { break; }
-
-        size_t new_length = alloc_length << 1;
-        data = realloc(data, new_length);
-
-        if (!data) { break; }
-
-        alloc_length = new_length;
-    }
-
-    if (data[data_length - 1] == '\n') {
-        data[data_length - 1] = '\0';
-    }
-
-    data = realloc(data, data_length);
-
-    return data;
-}
-
-char** split_string(char* str) {
-    char** splits = NULL;
-    char* token = strtok(str, " ");
-
-    int spaces = 0;
-
-    while (token) {
-        splits = realloc(splits, sizeof(char*) * ++spaces);
-        if (!splits) {
-            return splits;
+	polynomial C;				// 결과 다항식
+	int Apos = 0, Bpos = 0, Cpos = 0;	// 배열 인덱스 변수
+	int degree_a = A.degree;
+	int degree_b = B.degree;
+	C.degree = MAX(A.degree, B.degree); // 결과 다항식 차수
+	while (Apos <= A.degree && Bpos <= B.degree) {
+		if (degree_a > degree_b) { // A항 > B항
+			C.coef[Cpos++] = A.coef[Apos++];
+			degree_a--;
+		}
+        else if (degree_a == degree_b) { // A항 == B항
+            C.coef[Cpos++] = A.coef[Apos++] + B.coef[Bpos++];
+            degree_a--; degree_b--;
         }
-
-        splits[spaces - 1] = token;
-
-        token = strtok(NULL, " ");
+        else {			// B항 > A항
+            C.coef[Cpos++] = B.coef[Bpos++];
+            degree_b--;
+        }
     }
-
-    return splits;
+    return C;
+}
+void print_poly(polynomial p)
+{
+	for (int i = p.degree; i>0; i--)
+		printf("%3.1fx^%d + ", p.coef[p.degree - i], i);
+	printf("%3.1f \n", p.coef[p.degree]);
+}
+// 주함수
+int main(void)
+{
+	polynomial a = { 5,{ 3, 6, 0, 0, 0, 10 } };
+	polynomial b = { 4,{ 7, 0, 5, 0, 1 } };
+	polynomial c;
+	print_poly(a);
+	print_poly(b);
+	c = poly_add1(a, b);
+	printf("-----------------------------------------------------------------------------\n");
+	print_poly(c);
+	return 0;
 }
