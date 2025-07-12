@@ -1,19 +1,16 @@
 t = int(input()) # test case
 
-room_first = 1 # 층 수
-room_last = 0 # 방 수
+# 방 배정 알고리즘
+def room_number(height, width, num):
+    cnt = 0
+    for w in range(1, width+1):
+        for h in range(1, height+1):
+            cnt += 1
+            if cnt == num and w < 10:
+                return str(h) + str(0) + str(w)
+            elif cnt == num and w >= 10:
+                return str(h) + str(w)
 
 for i in range(t):
-    h, w, n = map(int, input().split()) # 호텔 층 수(세로), 각 방 수(가로), 손님 순번
-
-    # 방 배정 알고리즘
-    while True:
-        if n // h >= 1: # 층 수 멈춤
-            print("stop")
-            break
-        else:
-            room_first +=1
-            print(room_first)
-    
-    room_last = n / (room_first*h)
-    print(str(room_first)+'0'+str(room_last))
+    h, w, n = map(int, input().split())
+    print(room_number(h, w, n))
